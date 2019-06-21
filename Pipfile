@@ -6,6 +6,8 @@ verify_ssl = true
 [dev-packages]
 flake8 = "*"
 black = "*"
+docutils = "*"
+doc8 = "*"
 
 [packages]
 discord-py = {extras = ["voice"],version = "*"}
