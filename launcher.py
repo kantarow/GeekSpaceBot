@@ -9,33 +9,29 @@ from gsbot import GSBot
 @contextlib.contextmanager
 def setup_logger():
     try:
-        bot_logger = logging.getLogger('gsbot')
+        bot_logger = logging.getLogger("gsbot")
         bot_logger.setLevel(logging.WARNING)
-        discord_logger = logging.getLogger('discord')
+        discord_logger = logging.getLogger("discord")
         discord_logger.setLevel(logging.WARNING)
 
         bot_handler = RotatingFileHandler(
-            filename='gsbot.log',
-            maxBytes=1048576,
-            backupCount=4
+            filename="gsbot.log", maxBytes=1048576, backupCount=4
         )
         discord_handler = RotatingFileHandler(
-            filename='discord.log',
-            maxBytes=1048576,
-            backupCount=4
+            filename="discord.log", maxBytes=1048576, backupCount=4
         )
 
         fmt = logging.Formatter(
-            '[{asctime}][{levelname}] {name}: {message}',
-            '%Y-%m-%d %H:%M:%S',
-            style='{'
+            "[{asctime}][{levelname}] {name}: {message}", "%Y-%m-%d %H:%M:%S", style="{"
         )
 
         bot_handler.setFormatter(fmt)
         discord_handler.setFormatter(fmt)
 
         bot_logger.addHandler(bot_handler)
-        discord_logger.addHandler(discord_logger)
+        discord_logger.addHandler(discord_handler)
+
+        yield
 
     finally:
         handlers = bot_handler[:]
@@ -67,5 +63,5 @@ def main():
     loop.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

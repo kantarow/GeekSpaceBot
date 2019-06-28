@@ -5,6 +5,9 @@ verify_ssl = true
 
 [dev-packages]
 flake8 = "*"
+black = "*"
+docutils = "*"
+doc8 = "*"
 
 [packages]
 discord-py = {extras = ["voice"],version = "*"}
@@ -12,3 +15,6 @@ asyncpg = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
