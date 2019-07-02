@@ -26,3 +26,16 @@ class GSBot(commands.Bot):
 
     async def start(self):
         await super().start(self.config['Token'])
+
+    def load_config(self, filepath: str) -> dict:
+        try:
+            with open(filepath, mode='r', encoding='utf8') as f:
+                return json.load(f)
+        except OSError:
+            logger.error('Configuration file is not found.')
+            self.save_config(filepath, dict())
+            logger.info('Created new file \'{0}\''.format(filepath))
+
+    def save_config(self, filepath: str, data: dict) -> None:
+        with open(filepath, mode='w', encoding='utf8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
