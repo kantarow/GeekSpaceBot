@@ -2,17 +2,47 @@ import contextlib
 import logging
 import asyncio
 
+from argparse import ArgumentParser
 from logging.handlers import RotatingFileHandler
 from gsbot import GSBot
 
 
+argparser = ArgumentParser()
+argparser.add_argument(
+    '-l',
+    '--loglevel',
+    type=str,
+    dest='loglevel',
+    help='Set logging level(DEBUG, INFO, WARNING, ERROR, CRITICAL)',
+)
+args = argparser.parse_args()
+
+loglvl = logging.WARNING
+
+if args.loglevel:
+    if args.loglevel == ' DEBUG':
+        loglvl = logging.DEBUG
+
+    elif args.loglevel == ' INFO':
+        loglvl = logging.INFO
+
+    elif args.loglevel == ' WARNING':
+        loglvl = logging.WARNING
+
+    elif args.loglevel == ' ERROR':
+        loglvl = logging.ERROR
+
+    elif args.loglevel == ' CRITICAL':
+        loglvl = logging.CRITICAL
+
+
 @contextlib.contextmanager
-def setup_logger():
+def setup_logger(loglvl):
     try:
         bot_logger = logging.getLogger("gsbot")
-        bot_logger.setLevel(logging.WARNING)
+        bot_logger.setLevel(loglvl)
         discord_logger = logging.getLogger("discord")
-        discord_logger.setLevel(logging.WARNING)
+        discord_logger.setLevel(loglvl)
 
         bot_handler = RotatingFileHandler(
             filename="gsbot.log", maxBytes=1048576, backupCount=4
@@ -52,7 +82,7 @@ async def setup_database():
 
 
 async def run_bot():
-    with setup_logger():
+    with setup_logger(loglvl):
         bot = GSBot()
         await bot.start()
 
