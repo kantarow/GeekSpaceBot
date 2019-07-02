@@ -4,6 +4,10 @@ from datetime import timedelta
 
 import re
 import discord
+import logging
+
+
+logger = logging.getLogger('gsbot.genembed')
 
 
 class GenEmbed(commands.Cog):
@@ -13,6 +17,7 @@ class GenEmbed(commands.Cog):
             r"(https?:\/\/(?:|ptb\.|canary\.)discordapp\.com\/channels\/[0-9]{18,19}\/[0-9]{18,19}\/[0-9]{18,19})"
         )
         self.idregex = re.compile(r"[0-9]{18,19}")
+        logger.info('GenEmbed Cog is initialized.')
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -25,7 +30,7 @@ class GenEmbed(commands.Cog):
             embed = await self.generate_embed_from_url(url)
             await message.channel.send(embed=embed)
 
-    async def generate_embed_from_url(self, url) -> discord.Embed:
+    async def generate_embed_from_url(self, url: str) -> discord.Embed:
         """DiscordのメッセージURLからEmbedオブジェクトを生成して返します。
 
         :param url: Embedを生成したいメッセージのURL。
@@ -39,7 +44,7 @@ class GenEmbed(commands.Cog):
 
         embed = discord.Embed()
         embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
-        embed.description = message.content
+        embed.description = message.content + '\n\n[元のメッセージ]({0})'.format(url)
 
         if len(message.attachments) > 0:
             embed.set_image(url=message.attachments[0].url)
