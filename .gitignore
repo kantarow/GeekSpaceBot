@@ -1,4 +1,6 @@
-.vscode/settings.json
-config/config.json
+*.json
 *.log
 __pycache__
+
+!config/config_example.json
+!.vscode/launch.json
