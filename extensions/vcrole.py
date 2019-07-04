@@ -54,7 +54,6 @@ class VCRole(commands.Cog):
 
     @vcrole.command(name='add')
     async def add_vcrole(self, ctx, vc: discord.VoiceChannel, role: discord.Role):
-        # TODO: VCと役職の紐付けを追加する
         settings = self.config.get(str(vc.id))
         if settings is None:
             settings = list()
@@ -76,7 +75,6 @@ class VCRole(commands.Cog):
 
     @vcrole.command(name='remove')
     async def remove_vcrole(self, ctx, vc: discord.VoiceChannel, index: int):
-        # TODO: VCと役職の紐付けを削除する
         settings = self.config.get(str(vc.id))
 
         if settings is None:
@@ -99,13 +97,18 @@ class VCRole(commands.Cog):
         before: discord.VoiceState,
         after: discord.VoiceState,
     ):
+        # FIXME: 未確認。意図した動作は行わないと思われる。on_voice_state_updateイベントの仕様の検証が必要。
         if before.channel is None:
-            self.check_and_add_roles()
+            self.check_and_add_roles(member, after)
+            return
 
-        elif after.channel is not None:
-            self.check_and_remove_roles()
-            self.check_and_add_roles()
+        if before.channel == after.channel:
+            return
 
+        self.check_and_remove_roles(member, before)
+        self.check_and_add_roles(member, after)
+
+    # HACK: check_and_remove_rolesと被る部分が多い。名称も不明瞭。要リファクタリング。
     async def check_and_add_roles(
         self, member: discord.Member, channel: discord.VoiceChannel
     ):
@@ -130,13 +133,31 @@ class VCRole(commands.Cog):
                 logger.info('Member is not joined to Guild. ID: {0}'.format(member.id))
             await target_member.add_roles(role)
 
+    # HACK: check_and_add_rolesと被る部分が多い。名称も不明瞭。要リファクタリング。
     async def check_and_remove_roles(
         self, member: discord.Member, channel: discord.VoiceChannel
     ):
-        setting = self.config.get(str(channel.id))
+        settings = self.config.get(str(channel.id))
 
-        if setting is None:
+        if settings is None:
             return
+
+        for data in settings:
+            guild = self.bot.get_guild(data['guild_id'])
+
+            if guild is None:
+                logger.warning('Guild is not found. ID: {0}'.format(data['guild_id']))
+                continue
+
+            role = guild.get_role(data['role_id'])
+            if role is None:
+                logger.warning('Role is not found. ID: {0}'.format(data['role_id']))
+                continue
+
+            target_member = guild.get_member(member.id)
+            if target_member is None:
+                logger.info('Member is not joined to Guild. ID: {0}'.format(member.id))
+            await target_member.remove_roles(role)
 
 
 def setup(bot):
