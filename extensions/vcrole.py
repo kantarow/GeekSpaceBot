@@ -128,7 +128,7 @@ class VCRole(commands.Cog):
             target_member = guild.get_member(member.id)
             if target_member is None:
                 logger.info('Member is not joined to Guild. ID: {0}'.format(member.id))
-            await member.add_roles()
+            await target_member.add_roles(role)
 
     async def check_and_remove_roles(
         self, member: discord.Member, channel: discord.VoiceChannel
