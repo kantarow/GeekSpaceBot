@@ -156,7 +156,7 @@ class VCRole(commands.Cog):
             channel = self.bot.get_channel(int(k))
 
             for member in channel.members:
-                self.check_and_add_roles(member, channel)
+                await self.check_and_add_roles(member, channel)
 
             for setting in v:
                 guild = self.bot.get_guild(setting['guild_id'])
@@ -169,7 +169,7 @@ class VCRole(commands.Cog):
                     if member.voice.channel == channel:
                         continue
 
-                    self.check_and_remove_roles(member, channel)
+                    await self.check_and_remove_roles(member, channel)
 
     # HACK: check_and_remove_rolesと被る部分が多い。名称も不明瞭。要リファクタリング。
     async def check_and_add_roles(
