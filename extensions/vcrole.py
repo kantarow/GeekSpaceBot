@@ -53,15 +53,46 @@ class VCRole(commands.Cog):
             await ctx.send(embed=embed)
 
     @vcrole.command(name='add')
-    @commands.dm_only()
-    async def add_vcrole(self, ctx, vc: discord.VoiceChannel, role: discord.Role):
-        settings = self.config.get(str(vc.id))
+    async def add_vcrole(
+        self, ctx, vc_guild_id: int, vc_id: int, role_guild_id: int, role_id: int
+    ):
+        vc_guild = self.bot.get_guild(vc_guild_id)
+
+        if vc_guild is None:
+            logger.warning(
+                'Failed to get guild by vc_guild_id: {0}'.format(vc_guild_id)
+            )
+            return
+
+        voice_channel = vc_guild.get_channel(vc_id)
+
+        if isinstance(
+            voice_channel, (type(None), discord.TextChannel, discord.DMChannel)
+        ):
+            logger.warning('Failed to get voice channel by vc_id: {0}'.format(vc_id))
+            return
+
+        role_guild = self.bot.get_guild(role_guild_id)
+
+        if role_guild is None:
+            logger.warning(
+                'Failed to get guild by role_guild_id: {0}'.format(role_guild_id)
+            )
+            return
+
+        role = role_guild.get_role(role_id)
+
+        if role is None:
+            logger.warning('Failed to get role by role_id: {0}'.format(role_id))
+            return
+
+        settings = self.config.get(str(vc_id))
         if settings is None:
             settings = list()
 
             data = dict()
             data['role_id'] = role.id
-            data['guild_id'] = role.guild.id
+            data['guild_id'] = role_guild_id
 
             settings.append(data)
         else:
@@ -71,7 +102,7 @@ class VCRole(commands.Cog):
 
             settings.append(data)
 
-        self.config[str(vc.id)] = settings
+        self.config[str(vc_id)] = settings
         self.bot.save_config(CONFIGPATH, self.config)
 
     @vcrole.command(name='remove')
