@@ -9,6 +9,10 @@ CONFIGPATH = 'config/vcrole.json'
 logger = logging.getLogger('gsbot.vcrole')
 
 
+def check_executor_is_authorized_user(ctx):
+    return ctx.author.id in [195816057926057994, 319226423623548928]
+
+
 class VCRole(commands.Cog):
     def __init__(self, bot: GSBot):
         self.bot = bot
@@ -20,6 +24,7 @@ class VCRole(commands.Cog):
         pass
 
     @vcrole.command(name='list')
+    @commands.check(check_executor_is_authorized_user)
     async def list_vcrole(self, ctx, vc: discord.VoiceChannel):
         settings = self.config.get(str(vc.id))
 
@@ -53,6 +58,7 @@ class VCRole(commands.Cog):
             await ctx.send(embed=embed)
 
     @vcrole.command(name='add')
+    @commands.check(check_executor_is_authorized_user)
     async def add_vcrole(
         self, ctx, vc_guild_id: int, vc_id: int, role_guild_id: int, role_id: int
     ):
@@ -106,7 +112,7 @@ class VCRole(commands.Cog):
         self.bot.save_config(CONFIGPATH, self.config)
 
     @vcrole.command(name='remove')
-    @commands.dm_only()
+    @commands.check(check_executor_is_authorized_user)
     async def remove_vcrole(self, ctx, vc: discord.VoiceChannel, index: int):
         settings = self.config.get(str(vc.id))
 
