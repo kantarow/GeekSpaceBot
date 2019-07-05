@@ -5,7 +5,7 @@ import json
 import logging
 
 
-INITIAL_EXTENSIONS = ('extensions.genembed', 'extensions.vcrole')
+INITIAL_EXTENSIONS = ('extensions.genembed', 'extensions.vcrole', 'extensions.gnupdate')
 logger = logging.getLogger('gsbot')
 
 
