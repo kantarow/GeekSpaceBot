@@ -97,16 +97,18 @@ class VCRole(commands.Cog):
         before: discord.VoiceState,
         after: discord.VoiceState,
     ):
-        # FIXME: 未確認。意図した動作は行わないと思われる。on_voice_state_updateイベントの仕様の検証が必要。
-        if before.channel is None:
-            self.check_and_add_roles(member, after)
-            return
-
+        # VCへの接続・切断以外を破棄
         if before.channel == after.channel:
             return
+        if before.channel is None:
+            await self.check_and_add_roles(member, after.channel)
+            return
+        elif after.channel is None:
+            await self.check_and_remove_roles(member, before.channel)
+            return
 
-        self.check_and_remove_roles(member, before)
-        self.check_and_add_roles(member, after)
+        await self.check_and_remove_roles(member, before.channel)
+        await self.check_and_add_roles(member, after.channel)
 
     # HACK: check_and_remove_rolesと被る部分が多い。名称も不明瞭。要リファクタリング。
     async def check_and_add_roles(
