@@ -53,6 +53,7 @@ class VCRole(commands.Cog):
             await ctx.send(embed=embed)
 
     @vcrole.command(name='add')
+    @commands.dm_only()
     async def add_vcrole(self, ctx, vc: discord.VoiceChannel, role: discord.Role):
         settings = self.config.get(str(vc.id))
         if settings is None:
@@ -74,6 +75,7 @@ class VCRole(commands.Cog):
         self.bot.save_config(CONFIGPATH, self.config)
 
     @vcrole.command(name='remove')
+    @commands.dm_only()
     async def remove_vcrole(self, ctx, vc: discord.VoiceChannel, index: int):
         settings = self.config.get(str(vc.id))
 
