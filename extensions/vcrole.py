@@ -149,6 +149,28 @@ class VCRole(commands.Cog):
         await self.check_and_remove_roles(member, before.channel)
         await self.check_and_add_roles(member, after.channel)
 
+    # HACK: ネストが深すぎる。リファクタリングできればするべきである。
+    @commands.Cog.listener()
+    async def on_ready(self):
+        for k, v in self.config.items():
+            channel = self.bot.get_channel(int(k))
+
+            for member in channel.members:
+                self.check_and_add_roles(member, channel)
+
+            for setting in v:
+                guild = self.bot.get_guild(setting['guild_id'])
+                role = guild.get_role(setting['role_id'])
+
+                for member in role.members:
+                    if member.voice is None:
+                        continue
+
+                    if member.voice.channel == channel:
+                        continue
+
+                    self.check_and_remove_roles(member, channel)
+
     # HACK: check_and_remove_rolesと被る部分が多い。名称も不明瞭。要リファクタリング。
     async def check_and_add_roles(
         self, member: discord.Member, channel: discord.VoiceChannel
