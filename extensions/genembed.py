@@ -30,6 +30,22 @@ class GenEmbed(commands.Cog):
             embed = await self.generate_embed_from_url(url)
             await message.channel.send(embed=embed)
 
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
+        user = self.bot.get_user(payload.user_id)
+
+        if user.bot:
+            return
+
+        channel = self.bot.get_channel(payload.channel_id)
+        message = await channel.fetch_message(payload.message_id)
+
+        if message.author != self.bot.user:
+            return
+
+        if payload.emoji.name == '❌':
+            await message.delete()
+
     async def generate_embed_from_url(self, url: str) -> discord.Embed:
         """DiscordのメッセージURLからEmbedオブジェクトを生成して返します。
 
