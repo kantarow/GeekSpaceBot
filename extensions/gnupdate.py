@@ -14,7 +14,7 @@ class GuildNameUpdater(commands.Cog):
     async def name_update(self):
         await self.bot.wait_until_ready()
         guild = self.bot.get_guild(406357894427312148)
-        await guild.edit(name='Geek-Space {0}'.format(guild.member_count))
+        await guild.edit(name='Geek-Space +{0} members'.format(guild.member_count))
 
 
 def setup(bot):
