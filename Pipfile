@@ -12,6 +12,7 @@ doc8 = "*"
 [packages]
 discord-py = {extras = ["voice"],version = "*"}
 asyncpg = "*"
+beautifulsoup4 = "*"
 
 [requires]
 python_version = "3.7"
