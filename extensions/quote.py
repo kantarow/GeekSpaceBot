@@ -7,17 +7,17 @@ import discord
 import logging
 
 
-logger = logging.getLogger('gsbot.genembed')
+logger = logging.getLogger("gsbot.quote")
 
 
-class GenEmbed(commands.Cog):
+class Quote(commands.Cog):
     def __init__(self, bot: GSBot):
         self.bot = bot
         self.urlregex = re.compile(
             r"(https?:\/\/(?:|ptb\.|canary\.)discordapp\.com\/channels\/[0-9]{18,19}\/[0-9]{18,19}\/[0-9]{18,19})"
         )
         self.idregex = re.compile(r"[0-9]{18,19}")
-        logger.info('GenEmbed Cog is initialized.')
+        logger.info("Quote Cog is initialized.")
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -43,7 +43,7 @@ class GenEmbed(commands.Cog):
         if message.author != self.bot.user:
             return
 
-        if payload.emoji.name == '❌':
+        if payload.emoji.name == "❌":
             await message.delete()
 
     async def generate_embed_from_url(self, url: str) -> discord.Embed:
@@ -60,7 +60,7 @@ class GenEmbed(commands.Cog):
 
         embed = discord.Embed()
         embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
-        embed.description = message.content + '\n\n[元のメッセージ]({0})'.format(url)
+        embed.description = message.content + "\n\n[元のメッセージ]({0})".format(url)
 
         if len(message.attachments) > 0:
             embed.set_image(url=message.attachments[0].url)
@@ -76,4 +76,4 @@ class GenEmbed(commands.Cog):
 
 
 def setup(bot: GSBot):
-    bot.add_cog(GenEmbed(bot))
+    bot.add_cog(Quote(bot))
