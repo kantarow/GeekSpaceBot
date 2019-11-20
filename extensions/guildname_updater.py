@@ -5,16 +5,24 @@ from gsbot import GSBot
 class GuildNameUpdater(commands.Cog):
     def __init__(self, bot: GSBot):
         self.bot = bot
-        self.name_update.start()
 
-    def cog_unload(self):
-        self.name_update.cancel()
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        if member.guild.id != 406357894427312148:
+            return
 
-    @tasks.loop(hours=1)
-    async def name_update(self):
-        await self.bot.wait_until_ready()
+        self.change_guild_name()
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        if member.guild.id != 406357894427312148:
+            return
+
+        self.change_guild_name()
+
+    def change_guild_name(self):
         guild = self.bot.get_guild(406357894427312148)
-        await guild.edit(name='Geek-Space +{0} members'.format(guild.member_count))
+        await guild.edit(name="Geek-Space +{0} members".format(guild.member_count))
 
 
 def setup(bot):
