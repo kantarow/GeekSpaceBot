@@ -54,9 +54,7 @@ class Quote(commands.Cog):
         :return: Discordのメッセージから生成したEmbedオブジェクト。
         :rtype: discord.Embed
         """
-        ids = self.idregex.findall(url)  # [GuildID, ChannelID, MessageID]
-        channel = await self.bot.fetch_channel(ids[1])
-        message = await channel.fetch_message(ids[2])
+        message = self.get_message_by_url_recursive(url)
 
         embed = discord.Embed()
         embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
@@ -69,10 +67,29 @@ class Quote(commands.Cog):
             "%Y/%m/%d %H:%M:%S"
         )
         embed.set_footer(
-            text="{0} - {1} | {2}".format(message.guild.name, channel.name, timestamp)
+            text="{0} - {1} | {2}".format(message.guild.name, message.channel.name, timestamp)
         )
 
         return embed
+
+    def get_message_by_url_recursive(self, url):
+        message = self.get_message_by_url(url)
+
+        if self.is_url_only(message):
+            content = message.content
+            message = self.get_message_by_url_recursive(content)
+
+        return message
+
+    def get_message_by_url(self, url: str):
+        ids = self.idregex.findall(url)  # [GuildID, ChannelID, MessageID]
+        channel = await self.bot.fetch_channel(ids[1])
+        message = await channel.fetch_message(ids[2])
+
+        return message
+
+    def is_url_only(self, message: discord.Message):
+        return self.urlregex.fullmatch(message.content) is not None
 
 
 def setup(bot: GSBot):
