@@ -5,7 +5,11 @@ import json
 import logging
 
 
-INITIAL_EXTENSIONS = ("extensions.quote", "extensions.vcrole", "extensions.gnupdate")
+INITIAL_EXTENSIONS = (
+    "extensions.quote",
+    "extensions.vcrole",
+    "extensions.guildname_updater",
+)
 logger = logging.getLogger("gsbot")
 
 
